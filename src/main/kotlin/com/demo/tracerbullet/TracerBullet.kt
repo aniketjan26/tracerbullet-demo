@@ -46,6 +46,19 @@ object TracerBullet {
                 // Log the trace
                 logTrace(traceContext, request, response, duration)
 
+                // Record span for diagram generation
+                TraceCollector.recordSpan(
+                    traceId = traceContext.traceId,
+                    spanId = traceContext.spanId,
+                    parentSpanId = traceContext.parentSpanId,
+                    serviceName = traceContext.serviceName,
+                    method = request.method,
+                    uri = request.uri.toString(),
+                    status = response.status,
+                    startTime = startTime,
+                    duration = duration
+                )
+
                 // Add trace headers to response
                 addTraceHeaders(response, traceContext)
             } finally {

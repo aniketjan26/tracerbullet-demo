@@ -34,3 +34,6 @@ bin/
 
 # Compiled class files
 *.class
+
+# Generated diagrams (runtime generated)
+diagrams/
