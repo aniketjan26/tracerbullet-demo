@@ -57,7 +57,7 @@ fun main() {
 class FrontendService {
     private val client = ApacheClient()
 
-    private val app: HttpHandler = routes(
+    fun createTestApp(backendPort: Int = 8081): HttpHandler = routes(
         "/users/{id}" bind Method.GET to { request ->
             val userId = request.path("id")!!
             println("\n[FRONTEND] Received request for user: $userId")
@@ -67,7 +67,7 @@ class FrontendService {
                 .then(client)
 
             val backendResponse = backendClient(
-                Request(Method.GET, "http://localhost:8081/api/users/$userId")
+                Request(Method.GET, "http://localhost:$backendPort/api/users/$userId")
             )
 
             Response(Status.OK)
@@ -81,7 +81,7 @@ class FrontendService {
                 .then(client)
 
             val backendResponse = backendClient(
-                Request(Method.POST, "http://localhost:8081/api/orders")
+                Request(Method.POST, "http://localhost:$backendPort/api/orders")
                     .body(request.bodyString())
             )
 
@@ -93,6 +93,8 @@ class FrontendService {
             Response(Status.OK).body("Frontend service is healthy!")
         }
     )
+
+    private val app: HttpHandler = createTestApp()
 
     fun start() {
         val server = TracerBullet.serverFilter("frontend-service")
@@ -110,7 +112,7 @@ class FrontendService {
 class BackendService {
     private val client = ApacheClient()
 
-    private val app: HttpHandler = routes(
+    fun createTestApp(databasePort: Int = 8082): HttpHandler = routes(
         "/api/users/{id}" bind Method.GET to { request ->
             val userId = request.path("id")!!
             println("[BACKEND] Processing user lookup: $userId")
@@ -120,7 +122,7 @@ class BackendService {
                 .then(client)
 
             val dbResponse = dbClient(
-                Request(Method.GET, "http://localhost:8082/db/users/$userId")
+                Request(Method.GET, "http://localhost:$databasePort/db/users/$userId")
             )
 
             Response(Status.OK)
@@ -135,7 +137,7 @@ class BackendService {
                 .then(client)
 
             val dbResponse = dbClient(
-                Request(Method.POST, "http://localhost:8082/db/orders")
+                Request(Method.POST, "http://localhost:$databasePort/db/orders")
                     .body(request.bodyString())
             )
 
@@ -143,6 +145,8 @@ class BackendService {
                 .body("""{"orderId":"${dbResponse.bodyString()}", "status":"created"}""")
         }
     )
+
+    private val app: HttpHandler = createTestApp()
 
     fun start() {
         val server = TracerBullet.serverFilter("backend-service")
@@ -158,7 +162,7 @@ class BackendService {
  * Database Service - Data persistence layer
  */
 class DatabaseService {
-    private val app: HttpHandler = routes(
+    fun createTestApp(): HttpHandler = routes(
         "/db/users/{id}" bind Method.GET to { request ->
             val userId = request.path("id")!!
             println("[DATABASE] Querying user: $userId")
@@ -178,8 +182,16 @@ class DatabaseService {
 
             Response(Status.CREATED)
                 .body("ORD-${System.currentTimeMillis()}")
+        },
+
+        "/db/users/404" bind Method.GET to {
+            println("[DATABASE] User not found")
+            Response(Status.NOT_FOUND)
+                .body("User not found")
         }
     )
+
+    private val app: HttpHandler = createTestApp()
 
     fun start() {
         val server = TracerBullet.serverFilter("database-service")

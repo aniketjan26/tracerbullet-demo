@@ -58,13 +58,79 @@ When making downstream calls:
 - **Maven 3.6** or higher
 - **curl** (for running the demo script)
 
-## Building the Project
+## Building and Testing the Project
+
+### Quick Start: Build and Run Tests
 
 ```bash
-mvn clean package
+mvn clean install
 ```
 
-This creates an executable JAR: `target/tracerbullet-demo-1.0.0.jar`
+This will:
+1. Compile the code
+2. Run all acceptance tests
+3. **Generate UML diagrams for each test scenario**
+4. Create test reports in `diagrams/`
+5. Build the executable JAR
+
+### Build Only (Skip Tests)
+
+```bash
+mvn clean package -DskipTests
+```
+
+### Run Tests Only
+
+```bash
+mvn test
+```
+
+## Acceptance Tests
+
+The project includes **7 comprehensive acceptance tests** in Given-When-Then format that demonstrate different tracing scenarios:
+
+1. **Successful user lookup** - Request flows through all three services
+2. **Order creation** - POST request with trace propagation
+3. **Health check** - Single service response (minimal trace)
+4. **Concurrent requests** - Multiple traces with unique IDs
+5. **Trace propagation** - Verifying trace ID consistency
+6. **Parent-child relationships** - Span hierarchy verification
+7. **Status code tracking** - Response codes in traces
+
+### Test Output
+
+When tests run, they:
+- ✅ Start all three services on test ports (9080, 9081, 9082)
+- 📝 Execute scenarios in Given-When-Then format
+- 📊 Generate PlantUML diagrams for each scenario
+- 📈 Create comprehensive HTML test report
+
+### Viewing Test Results
+
+After running tests, check:
+
+**Test Report (Recommended):**
+```bash
+open diagrams/test-report.html
+# Or manually open in your browser
+```
+
+This shows:
+- All test scenarios with diagrams
+- UML sequence diagrams rendered inline
+- Trace summaries
+- Statistics (total scenarios, spans, traces)
+
+**Individual Diagrams:**
+```bash
+ls diagrams/
+# Shows trace-*.puml and trace-*.txt files
+```
+
+**Test Summary:**
+```bash
+cat diagrams/test-summary.txt
+```
 
 ## Running the Demo
 
@@ -294,7 +360,39 @@ tracerbullet-demo/
 
 ## Explaining to Others
 
-When demoing this to someone, follow this flow:
+### Option 1: Quick Demo with Tests (Recommended)
+
+**Best for**: Quick demonstrations, CI/CD showcases, or when you want pre-generated diagrams
+
+```bash
+# Run tests - generates diagrams automatically
+mvn clean install
+
+# Open test report
+open diagrams/test-report.html
+```
+
+Then walk through:
+1. **Show the test report** - Beautiful HTML page with all scenarios
+2. **Explain each scenario** - Given-When-Then format is easy to understand
+3. **Show the diagrams** - Visual representation of each test case
+4. **Highlight key features**:
+   - Multiple services in sequence
+   - Color-coded status codes
+   - Parent-child span relationships
+   - Timing information
+5. **Show the test code** - `TracerBulletAcceptanceTests.kt` demonstrates usage
+
+**Benefits:**
+- ✅ Pre-generated diagrams ready to show
+- ✅ Multiple scenarios covered
+- ✅ Professional test report
+- ✅ Proves the system works
+- ✅ Great for technical audiences
+
+### Option 2: Live Interactive Demo
+
+**Best for**: Hands-on demos, workshops, or live coding sessions
 
 1. **Start the app** and show the three services starting
 2. **Make a simple request**: `curl http://localhost:8080/users/123`
