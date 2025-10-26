@@ -2,6 +2,51 @@
 
 A demonstration project showing how **TracerBullet** distributed tracing works with **http4k** in Kotlin.
 
+---
+
+## 📚 Documentation
+
+### For Demo Participants
+
+**Preparing for a demo?** Start here:
+
+1. **[SETUP-GUIDE.md](SETUP-GUIDE.md)** - Quick 10-minute setup guide
+   - Prerequisites checklist
+   - Step-by-step installation
+   - Troubleshooting tips
+   - Pre-demo verification
+
+2. **[ARTICLE.md](ARTICLE.md)** - Comprehensive article on TracerBullet
+   - Why distributed tracing matters
+   - How TracerBullet works
+   - Real-world use cases
+   - Deep technical concepts
+   - Read before demo for full context (15-20 min)
+
+### For Developers
+
+**Want to explore the code?** Continue reading this README for:
+- Technical implementation details
+- Code structure and examples
+- API documentation
+- Extension ideas
+
+---
+
+## Quick Start
+
+```bash
+# Clone and build
+git clone https://github.com/aniketjan26/tracerbullet-demo.git
+cd tracerbullet-demo
+mvn clean install
+
+# View test report with diagrams
+open diagrams/test-report.html
+```
+
+---
+
 ## What is TracerBullet?
 
 TracerBullet is a pattern for **distributed tracing** - tracking requests as they flow through multiple services in a microservices architecture. The name comes from the military practice of using tracer ammunition that lights up to show the bullet's path.
