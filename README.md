@@ -114,6 +114,8 @@ curl -X POST http://localhost:8080/orders \
 
 Watch the application console output. You'll see trace information like:
 
+**Console Output:**
+
 ```
 ========================================
 TRACE: a1b2c3d4-e5f6-7890-abcd-ef1234567890
@@ -148,6 +150,84 @@ DURATION: 50ms
 - Each span has its own **unique span ID**
 - Child spans reference their **parent span ID**
 - You can see the complete request path through the system
+
+### Step 4: View UML Diagrams
+
+TracerBullet automatically generates **UML sequence diagrams** for each trace! These diagrams provide a visual representation of the request flow, including:
+- Service interactions
+- Request/response status codes (with color coding)
+- Timing information
+- Parent-child relationships
+
+**Generated Files:**
+
+After making requests, check the `diagrams/` directory:
+
+```bash
+diagrams/
+├── trace-a1b2c3d4.puml    # PlantUML diagram file
+├── trace-a1b2c3d4.txt     # Text summary with visual tree
+└── index.html             # HTML viewer (after running viewer script)
+```
+
+**Viewing Options:**
+
+**Option 1: Interactive Script**
+```bash
+./view-diagrams.sh
+```
+
+This script offers:
+1. View text summaries in terminal
+2. Generate HTML viewer for all diagrams
+3. Open PlantUML diagrams in online viewer
+4. Show latest diagram
+
+**Option 2: HTML Viewer (Recommended for Demo)**
+```bash
+./generate-html-viewer.sh
+```
+
+This creates an interactive HTML page showing:
+- All trace diagrams rendered as images
+- Statistics (total traces, spans, errors)
+- Full trace details
+- Clickable diagrams for full-screen view
+
+**Option 3: VSCode PlantUML Extension**
+
+Install the PlantUML extension in VSCode and open any `.puml` file for local rendering.
+
+**Option 4: Online PlantUML Viewer**
+
+Visit https://www.plantuml.com/plantuml/uml/ and paste the content from any `.puml` file.
+
+**Example Diagram Output:**
+
+The generated diagrams show:
+- **Green status codes (200s)**: Successful responses
+- **Orange status codes (400s)**: Client errors
+- **Red status codes (500s)**: Server errors
+- **Timing information**: Duration of each span
+- **Service activation**: Visual representation of when each service is active
+
+**Text Summary Example:**
+
+```
+================================================================================
+TRACE SUMMARY
+================================================================================
+
+Trace ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+Total Spans: 3
+Total Duration: 200ms
+
+Request Flow:
+--------------------------------------------------------------------------------
+✓ [frontend-service] GET /users/123 → 200 (150ms)
+   ✓ [backend-service] GET /api/users/123 → 200 (100ms)
+      ✓ [database-service] GET /db/users/123 → 200 (50ms)
+```
 
 ## Key Learning Points
 
@@ -197,11 +277,19 @@ When Service A calls Service B:
 tracerbullet-demo/
 ├── pom.xml                          # Maven configuration
 ├── demo.sh                          # Demo script
+├── view-diagrams.sh                 # Diagram viewer script
+├── generate-html-viewer.sh          # HTML viewer generator
 ├── README.md                        # This file
+├── diagrams/                        # Generated diagrams (created at runtime)
+│   ├── trace-*.puml                 # PlantUML sequence diagrams
+│   ├── trace-*.txt                  # Text summaries
+│   └── index.html                   # HTML viewer page
 └── src/main/kotlin/com/demo/tracerbullet/
     ├── Application.kt               # Main app with 3 services
     ├── TraceContext.kt              # Trace context data model
-    └── TracerBullet.kt              # Tracing filter implementation
+    ├── TracerBullet.kt              # Tracing filter implementation
+    ├── TraceCollector.kt            # Collects span data for diagrams
+    └── DiagramGenerator.kt          # Generates PlantUML diagrams
 ```
 
 ## Explaining to Others
@@ -212,11 +300,21 @@ When demoing this to someone, follow this flow:
 2. **Make a simple request**: `curl http://localhost:8080/users/123`
 3. **Show the console output** - point out how all three traces share the same trace ID
 4. **Explain the flow**: Frontend received request → called Backend → called Database
-5. **Make concurrent requests** to show different trace IDs for different requests
-6. **Show the code**:
+5. **Show the UML diagrams** - Run `./view-diagrams.sh` or `./generate-html-viewer.sh`
+   - Point out the visual flow of the request
+   - Highlight the status codes with color coding
+   - Show the timing information
+   - Demonstrate how the tree structure shows parent-child relationships
+6. **Make concurrent requests** to show different trace IDs for different requests
+7. **Show the diagrams directory** - Multiple traces, each with its own diagram
+8. **Show the code**:
    - Start with `TraceContext.kt` - simple data model
    - Then `TracerBullet.kt` - the filter implementation
+   - Show `TraceCollector.kt` - how spans are collected
+   - Show `DiagramGenerator.kt` - how PlantUML diagrams are generated
    - Finally `Application.kt` - how services use the filters
+
+**Pro Demo Tip:** Open the HTML viewer (`diagrams/index.html`) in a browser before the demo. As you make requests, refresh the page to show new diagrams appearing in real-time!
 
 ## Real-World Usage
 
