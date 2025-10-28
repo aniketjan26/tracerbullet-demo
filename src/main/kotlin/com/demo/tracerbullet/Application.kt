@@ -3,6 +3,7 @@ package com.demo.tracerbullet
 import org.http4k.client.ApacheClient
 import org.http4k.core.*
 import org.http4k.routing.bind
+import org.http4k.routing.path
 import org.http4k.routing.routes
 import org.http4k.server.Netty
 import org.http4k.server.asServer
